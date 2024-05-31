@@ -1,0 +1,68 @@
+Pokecache Package Documentation
+The pokecache package provides a simple in-memory cache with automatic expiration of entries.
+
+Overview
+The Cache type in this package is a thread-safe structure that allows adding, retrieving, and automatically removing entries based on a specified time-to-live (TTL) interval.
+
+Types
+Cache
+The Cache struct represents the main cache structure. It contains a map to hold cache entries and a mutex for thread-safe operations.
+
+Fields
+    .cache map[string]cacheEntry: The internal map that holds the cache entries.
+    .mux *sync.Mutex: The mutex to ensure thread-safe access to the cache.
+
+cacheEntry
+    .The cacheEntry struct is an internal structure that holds individual cache entries.
+
+Fields
+    .createdAt time.Time: The time when the cache entry was created.
+    .val []byte: The value of the cache entry.
+-----------------------------------
+Functions
+NewCache
+NewCache initializes a new Cache instance and starts a goroutine to periodically remove expired entries.
+
+Parameters:
+
+interval time.Duration: The time interval after which cache entries should be considered expired.
+
+Returns:
+Cache: A new instance of the Cache.
+-----------------------------------
+Add
+func (c *Cache) Add(key string, value []byte)
+Add adds a new entry to the cache or updates an existing entry with the specified key and value.
+
+Parameters:
+key string: The key for the cache entry.
+value []byte: The value for the cache entry.
+-----------------------------------
+Get
+func (c *Cache) Get(key string) ([]byte, bool)
+Get retrieves an entry from the cache by its key.
+
+Parameters:
+
+key string: The key for the cache entry.
+Returns:
+
+[]byte: The value of the cache entry.
+bool: A boolean indicating whether the key was found in the cache.
+-----------------------------------
+
+Internal Methods
+reapLoop
+func (c *Cache) reapLoop(interval time.Duration)
+reapLoop is an internal method that runs in a separate goroutine. It periodically calls the reap method to remove expired cache entries.
+
+Parameters:
+interval time.Duration: The time interval for the ticker to trigger the reaping process.
+-----------------------------------
+reap
+func (c *Cache) reap(now time.Time, last time.Duration)
+reap is an internal method that removes expired cache entries based on the current time and the specified TTL interval.
+
+Parameters:
+now time.Time: The current time.
+last time.Duration: The TTL interval to determine expiration.
