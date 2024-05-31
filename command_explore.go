@@ -1,23 +1,17 @@
 package main
 
 import (
-	"bufio"
+	"errors"
 	"fmt"
-	"os"
-	"strings"
 )
 
-func commandExplore(cfg *config) error {
+func commandExplore(cfg *config, args ...string) error {
 	for {
-		reader := bufio.NewReader(os.Stdin)
-		fmt.Print("Enter the name of Location > ")
-		input, err := reader.ReadString('\n')
-		if err != nil {
-			fmt.Println(err)
-			continue
+		if len(args) != 1 {
+			return errors.New("you must provide a location name")
 		}
-		input = strings.TrimSpace(strings.ToLower(input))
-		exploredPokemons, err := cfg.pokeapiClient.ExploreLocation(input)
+		name := args[0]
+		exploredPokemons, err := cfg.pokeapiClient.ExploreLocation(name)
 		if err != nil {
 			return err
 		}
